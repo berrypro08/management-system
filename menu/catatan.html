@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pencatatan Faktur Penjualan</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto px-10 py-8 max-w-7xl">
+        <!-- Header & Kembali ke Home -->
+        <div class="mb-8 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800">Pencatatan Faktur</h1>
+                <p class="text-gray-500">Sinkronisasi Real-time dengan Firebase Firestore.</p>
+            </div>
+            <a href="../index.html" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium px-4 py-2 rounded-lg transition text-sm">
+                ← Kembali ke Menu
+            </a>
+        </div>
+
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-xl font-bold text-gray-700">Daftar Faktur</h2>
+            <button type="button" onclick="openModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg shadow transition cursor-pointer">
+                + Tambah Faktur
+            </button>
+        </div>
+
+        <!-- Dashboard / Summary Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex items-center">
+                <div class="p-3 bg-blue-50 text-blue-600 rounded-lg mr-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Total Nilai Rupiah (Lunas)</p>
+                    <h3 id="totalRupiah" class="text-2xl font-bold text-gray-800">Rp 0</h3>
+                </div>
+            </div>
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex items-center">
+                <div class="p-3 bg-green-50 text-green-600 rounded-lg mr-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-500">Total Faktur</p>
+                    <h3 id="totalFaktur" class="text-2xl font-bold text-gray-800">0</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabel Faktur -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse min-w-[600px]">
+                    <thead>
+                        <tr class="bbg-gray-50 text-gray-600 text-[10px] sm:text-sm uppercase tracking-wider">
+                            <th class="py-3 px-4 sm:px-6">No. Faktur</th>
+                            <th class="py-3 px-4 sm:px-6">Tanggal</th>
+                            <th class="py-3 px-4 sm:px-6">Konsumen</th>
+                            <th class="py-3 px-4 sm:px-6">Nilai Rupiah</th>
+                            <th class="py-3 px-4 sm:px-6 text-emerald-600 font-bold">Kurang Pajak</th> <!-- KOLOM BARU -->
+                            <th class="py-3 px-4 sm:px-6 text-center">Status</th>
+                            <th class="py-3 px-4 sm:px-6 text-center">Aksi</th> 
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="divide-y divide-gray-200 text-sm text-gray-700">
+                        <tr><td colspan="6" class="text-center py-6 text-gray-400">Memuat data dari server...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Form Tambah Faktur -->
+    <div id="addModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl max-w-md w-full p-6 shadow-xl">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Tambah Faktur Baru</h3>
+            <form id="invoiceForm">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">No. Faktur</label>
+                    <input type="text" id="inputNo" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Cth: INV-001">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
+                    <input type="date" id="inputTgl" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama Konsumen</label>
+                    <input type="text" id="inputKonsumen" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nama Konsumen">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nilai Rupiah (Rp)</label>
+                    <input type="number" id="inputNilai" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Cth: 1500000">
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closeModal()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium px-4 py-2 rounded-lg transition">Batal</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal Form Pilih Tanggal Bayar -->
+    <div id="payModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl max-w-sm w-full p-6 shadow-xl">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Pilih Tanggal Pembayaran</h3>
+            <form id="payForm">
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Bayar</label>
+                    <input type="date" id="inputPayDate" required class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closePayModal()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium px-4 py-2 rounded-lg transition">Batal</button>
+                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2 rounded-lg transition">Konfirmasi Lunas</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="../script.js"></script>
+</body>
+</html>
