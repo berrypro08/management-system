@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Harga</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans">
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-900">Daftar Harga</h1>
+                <p class="text-sm text-gray-500">Daftar harga per outlet.</p>
+            </div>
+            <div class="flex items-center gap-3 flex-wrap">
+                <a href="catatan.html" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition">Faktur</a>
+                <a href="barang.html" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition">Barang</a>
+                <button type="button" onclick="openHargaModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium cursor-pointer">+ Tambah Harga</button>
+            </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-6 flex flex-col sm:flex-row gap-4">
+            <input type="text" id="searchInput" placeholder="Cari barang atau harga..." class="w-full sm:w-80 px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none">
+            <select id="filterOutlet" class="w-full sm:w-auto border border-gray-300 rounded-lg px-4 py-2 text-sm bg-white">
+                <option value="">Semua Outlet</option>
+            </select>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-50 border-b text-xs sm:text-sm text-gray-500">
+                        <th class="py-3 px-4">Outlet</th>
+                        <th class="py-3 px-4">Barang</th>
+                        <th class="py-3 px-4">Harga Dasar</th>
+                        <th class="py-3 px-4">Harga + Pajak (11%)</th>
+                        <th class="py-3 px-4 text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="tableHargaBody" class="divide-y divide-gray-100"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="hargaModal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl w-full max-w-lg p-6 max-h-[90vh] flex flex-col">
+            <h3 class="font-bold text-lg mb-4">Tambah Daftar Harga</h3>
+            <form id="hargaForm" class="space-y-4 overflow-y-auto">
+                <input type="text" id="inputOutlet" required placeholder="Nama Outlet" class="w-full border p-2 rounded-lg text-sm">
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="inputSudahPajak" class="w-4 h-4">
+                    <label for="inputSudahPajak" class="text-xs font-bold">Sudah Termasuk PPN 11%</label>
+                </div>
+                <div id="itemRowsContainer" class="space-y-2"></div>
+                <button type="button" onclick="addItemRow()" class="text-xs bg-blue-50 text-blue-600 px-3 py-1 rounded">+ Tambah Barang</button>
+                <div class="flex justify-end gap-2 pt-4">
+                    <button type="button" onclick="closeHargaModal()" class="px-4 py-2 bg-gray-100 rounded-lg text-sm">Batal</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm cursor-pointer">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script type="module" src="../harga.js"></script>
+</body>
+</html>
